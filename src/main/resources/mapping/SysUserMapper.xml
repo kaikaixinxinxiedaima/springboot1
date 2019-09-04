@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.test.mapper.SysUserMapper" >
+  <resultMap id="BaseResultMap" type="com.test.entity.SysUser" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="pass_word" property="passWord" jdbcType="VARCHAR" />
+    <result column="user_enable" property="userEnable" jdbcType="INTEGER" />
+    <result column="user_name" property="userName" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, pass_word, user_enable, user_name
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from sys_user
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="getUser" resultMap="BaseResultMap" parameterType="com.test.entity.SysUser" >
+    select
+    <include refid="Base_Column_List" />
+    from sys_user
+    where pass_word = #{passWord,jdbcType=INTEGER} and user_name = #{userName,jdbcType=INTEGER} and user_enable = 1
+  </select>
+  <select id="findPermissionsByUserId" resultType="java.lang.String" parameterType="java.lang.Integer" >
+    select
+      sys.res_url
+    from sys_user user inner join sys_user_role role on user.id = role.user_id inner join sys_role_permission permission
+    on role.id = permission.role_id inner join sys_permission sys on permission.permission_id = sys.id
+    where user.id = #{id}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from sys_user
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.test.entity.SysUser" >
+    insert into sys_user (id, pass_word, user_enable, 
+      user_name)
+    values (#{id,jdbcType=INTEGER}, #{passWord,jdbcType=VARCHAR}, #{userEnable,jdbcType=INTEGER}, 
+      #{userName,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.test.entity.SysUser" >
+    insert into sys_user
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="passWord != null" >
+        pass_word,
+      </if>
+      <if test="userEnable != null" >
+        user_enable,
+      </if>
+      <if test="userName != null" >
+        user_name,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="passWord != null" >
+        #{passWord,jdbcType=VARCHAR},
+      </if>
+      <if test="userEnable != null" >
+        #{userEnable,jdbcType=INTEGER},
+      </if>
+      <if test="userName != null" >
+        #{userName,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.test.entity.SysUser" >
+    update sys_user
+    <set >
+      <if test="passWord != null" >
+        pass_word = #{passWord,jdbcType=VARCHAR},
+      </if>
+      <if test="userEnable != null" >
+        user_enable = #{userEnable,jdbcType=INTEGER},
+      </if>
+      <if test="userName != null" >
+        user_name = #{userName,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.test.entity.SysUser" >
+    update sys_user
+    set pass_word = #{passWord,jdbcType=VARCHAR},
+      user_enable = #{userEnable,jdbcType=INTEGER},
+      user_name = #{userName,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

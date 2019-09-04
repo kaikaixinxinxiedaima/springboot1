@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <title>Getting Started: Serving Web Content</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <script src="/views/js/jquery-1.8.3.js"></script>
+</head>
+<body>
+    <table id="context">
+
+    </table>
+    <hr>
+
+    <input id="send" >
+    <button onclick="sendMessage()">发送</button>
+<!--    <shiro:hasPermission name="res:add">
+        <a id="addbtn" class="easyui-linkbutton" data-options="iconCls:'icon-add'">新增</a>
+    </shiro:hasPermission>-->
+
+
+</body>
+<script>
+    var socket;
+    //Thymeleaf js取值
+    var user = "[[${cid}]]";
+    if(typeof(WebSocket) == "undefined") {
+        console.log("您的浏览器不支持WebSocket");
+    }else{
+        console.log("您的浏览器支持WebSocket");
+        //实现化WebSocket对象，指定要连接的服务器地址与端口  建立连接
+        //等同于socket = new WebSocket("ws://localhost:8083/checkcentersys/websocket/20");
+        socket = new WebSocket("ws://localhost:8083/websocket/" + user);
+
+        //打开事件,连接建立时触发
+        socket.onopen = function() {
+            console.log("Socket 已打开");
+            //socket.send("这是来自客户端的消息" + location.href + new Date());
+        };
+
+        //获得消息事件
+        socket.onmessage = function(msg) {
+            console.log(msg.data);
+
+            //发现消息进入    开始处理前端触发逻辑
+            var data = JSON.parse(msg.data);
+            if(data.sender){
+                var html =
+                    "<tr>" +
+                    "   <td><strong>"+data.sender+"</strong><span style='margin-left: 50px;color: red'>"+data.mes+"</span></td>" +
+                    "</tr>";
+
+                $("#context").append(html);
+            }
+        };
+
+        //关闭事件
+        socket.onclose = function() {
+            console.log("Socket已关闭");
+        };
+
+        //发生了错误事件
+        socket.onerror = function() {
+            alert("Socket发生了错误");
+            //此时可以尝试刷新页面
+        }
+        //离开页面时，关闭socket
+        //jquery1.8中已经被废弃，3.0中已经移除
+        // $(window).unload(function(){
+        //     socket.close();
+        //});
+    }
+    
+    function sendMessage() {
+        $.ajax({
+            type: "GET",
+            url: "/webSocket/push/"+user,
+            data: {
+                message:$("#send").val()
+            },
+            dataType: "json",
+            success: function(data){
+
+            }
+        });
+    }
+
+</script>
+</html>

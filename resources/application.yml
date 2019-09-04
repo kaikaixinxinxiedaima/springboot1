@@ -1,0 +1,167 @@
+spring:
+  profiles:
+    active: dev
+
+
+---
+server:
+  port: 80
+
+spring:
+  profiles: dev # 多环境配置
+
+  thymeleaf:
+    cache: false
+    prefix: classpath:/templates/
+    suffix: .html
+    encoding: UTF-8
+    content-type: text/html
+    mode: HTML5
+#  mvc:
+#    view:
+#      prefix: classpath:/templates/ #定位模板的目录
+#      suffix: .html # 给返回的页面添加后缀名
+
+  #数据库配置
+  datasource:
+    url: jdbc:mysql://192.0.0.210:3306/springboot?useSSL=true&useUnicode=true&characterEncoding=utf8&rewriteBatchedStatements=true
+    username: root
+    password: 123456
+    # 使用druid数据源
+    type: com.alibaba.druid.pool.DruidDataSource
+    druid:
+#      driver-class-name: com.mysql.jdbc.Driver
+      filters: stat
+      maxActive: 20
+      initialSize: 1
+      maxWait: 60000
+      minIdle: 1
+      timeBetweenEvictionRunsMillis: 60000
+      minEvictableIdleTimeMillis: 300000
+      validationQuery: select 'x'
+      testWhileIdle: true
+      testOnBorrow: false
+      testOnReturn: false
+      poolPreparedStatements: true
+      maxOpenPreparedStatements: 20
+
+#通过jpa 生成数据库表
+#  jpa:
+#    hibernate:
+#      ddl-auto: update
+#      show-sql: true
+
+  #配置redis
+  redis:
+   #数据库索引
+    database: 0 # Redis默认情况下有16个分片，这里配置具体使用的分片，默认是0
+    host: 127.0.0.1
+    port: 6379
+    # redis.cluster
+#    password:
+#    cluster:
+#      nodes: 192.0.0.179:7001,192.0.0.179:7002,192.0.0.179:7003,192.0.0.179:7004,192.0.0.179:7005,192.0.0.179:7006
+
+    lettuce:
+      pool:
+          #最大连接数
+        max-active: 1000
+          #最大阻塞等待时间(负数表示没限制)
+        max-wait: -1
+          #最大空闲
+        max-idle: 1000
+          #最小空闲
+        min-idle: 100
+      #连接超时时间
+    timeout: 1000
+
+#  session:
+#    store-type: redis
+
+  #rabbitmq 配置
+  rabbitmq:
+    host: 192.168.183.128
+    port: 5672
+    username: admin
+    password: 123456
+    #虚拟主机
+    virtual-host: /
+    listener:
+      simple:
+        #手动ACK
+        acknowledge-mode: manual
+
+#分页插件配置
+pagehelper:
+  #分页插件会自动检测当前的数据库链接，自动选择合适的分页方式。 你可以配置helperDialect属性来指定分页插件使用哪种方言。配置时，可以使用下面的缩写值：
+  #oracle,mysql,mariadb,sqlite,hsqldb,postgresql,db2,sqlserver,informix,h2,sqlserver2012,derby
+  #特别注意：使用 SqlServer2012 数据库时，需要手动指定为 sqlserver2012，否则会使用 SqlServer2005 的方式进行分页
+  helperDialect: mysql
+  #分页合理化
+  reasonable: false
+  #是否支持接口参数来传递分页参数，默认false
+  support-methods-arguments: true
+  params: count=countSql
+  helper-dialect: mysql
+  #当设置为true的时候，如果pagesize设置为0（或RowBounds的limit=0），就不执行分页，返回全部结果
+  pageSizeZero: false
+
+#mybatis配置
+mybatis:
+  typeAliasesPackage: com.test.entity # 配置別名
+  mapperLocations: classpath*:mapping/*.xml #注意点：在classpath后面的*必不可少，缺少星号的话后面的通配符不起作用。  **表示可以表示任意多级目录  *表示多个任意字符
+  # 驼峰命名规范 如：数据库字段是  order_id 那么 实体字段就要写成 orderId
+  configuration:
+    map-underscore-to-camel-case: true
+
+#通用mapper配置
+mapper:
+  #枚举按简单类型处理，如果有枚举字段则需要加上该配置才会做映射
+  enum-as-simple-type: true
+  identity: MYSQL
+  #设置以后，会去判断 insert 和 update 中符串类型!=’’
+  not-empty: true
+  mappers: tk.mybatis.mapper.common.BaseMapper
+
+#设置将SQL语句打印到控制台 level后面是 mybatis接口目录
+logging:
+  level:
+    com:
+      test:
+        mapper: DEBUG
+
+
+
+#单点登录配置-------------------------
+# cas server地址
+casServerUrlPrefix: http://127.0.0.1
+#Cas登录页面地址
+casLoginUrl: http://127.0.0.1/login
+#Cas登出页面地址
+casLogoutUrl: http://127.0.0.1/logout
+#当前工程对外提供的服务地址
+shiroServerUrlPrefix: http://127.0.1.28:8080
+#casFilter UrlPattern
+casFilterUrlPattern: /index
+#登录地址
+loginUrl: http://127.0.0.1/login?service=http://127.0.1.28:8080/index
+#登出地址（casserver启用service跳转功能，需在webapps\cas\WEB-INF\cas.properties文件中启用cas.logout.followServiceRedirects=true）
+logoutUrl: http://127.0.0.1/logout?service=http://127.0.0.1/login?service=http://127.0.1.28:8080/index
+#权限认证失败跳转地址
+unauthorizedUrl: /error/403.html
+
+
+#定时任务配置
+corePoolSize: 10
+maxPoolSize: 200
+queueCapacity: 10
+
+
+#Elasticsearch
+# 9200端口是用来让HTTP REST API来访问ElasticSearch，而9300端口是传输层监听的默认端口
+elasticsearch:
+  ip: 192.0.0.131
+  port: 9300
+  pool: 5
+  cluster:
+    name: my-application
