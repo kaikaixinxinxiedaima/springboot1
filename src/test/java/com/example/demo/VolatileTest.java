@@ -48,7 +48,7 @@ public class VolatileTest {
 
         public void add(){
             try {
-                Thread.sleep(100);
+                Thread.sleep(100,1);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
