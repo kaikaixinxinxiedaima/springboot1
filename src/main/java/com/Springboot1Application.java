@@ -1,6 +1,7 @@
 package com;
 
 //import org.mybatis.spring.annotation.MapperScan;
+import com.test.conf.DataSourceConfig;
 import com.test.util.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,7 +10,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
+import org.springframework.context.annotation.Import;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 import tk.mybatis.spring.annotation.MapperScan;
 
 import java.util.Date;
@@ -18,6 +21,8 @@ import java.util.Date;
 @SpringBootApplication(exclude=DataSourceAutoConfiguration.class)
 @MapperScan("com.test.mapper")//将项目中对应的mapper类的路径加进来就可以了
 @EnableScheduling //开启定时任务
+@Import({DataSourceConfig.class}) //数据源
+@EnableTransactionManagement //开启事务管理
 public class Springboot1Application extends SpringBootServletInitializer {
 
     private static Logger logger = LoggerFactory.getLogger(Springboot1Application.class);

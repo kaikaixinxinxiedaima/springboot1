@@ -1,6 +1,7 @@
 package com.test.controller;
 
 import com.alibaba.fastjson.JSONObject;
+import com.test.annotation.MoreDataSource;
 import com.test.entity.Book;
 //import com.test.rabbitmq.TopicRabbitConfig;
 import com.test.service.BookService;
@@ -67,6 +68,29 @@ public class BookController {
 //
 //        logger.info("[对象缓存结果] - [{}]", JSONObject.toJSON(book1).toString());
 
+        return book;
+    }
+
+    @RequestMapping(value="/list2/{id}")
+    @ResponseBody
+    @MoreDataSource
+    public Book list2(@PathVariable(value = "id") Integer id){
+        Book book = bookService.findById(id);
+        return book;
+    }
+
+    @RequestMapping(value="/update/{id}")
+    @ResponseBody
+    public Book update(@PathVariable(value = "id") Integer id){
+        Book book = bookService.updateById(id);
+        return book;
+    }
+
+    @RequestMapping(value="/update2/{id}")
+    @ResponseBody
+    @MoreDataSource
+    public Book update2(@PathVariable(value = "id") Integer id){
+        Book book = bookService.updateById(id);
         return book;
     }
 
