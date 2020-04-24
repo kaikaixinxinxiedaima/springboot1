@@ -24,7 +24,7 @@ import java.util.function.DoubleUnaryOperator;
 import java.util.stream.IntStream;
 
 @RestController
-public class testController {
+public class testController1 {
     @Autowired
     private StringRedisTemplate stringRedisTemplate;
 

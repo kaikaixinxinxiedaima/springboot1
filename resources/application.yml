@@ -7,6 +7,7 @@ spring:
 server:
   port: 80
 
+
 spring:
   profiles: dev # 多环境配置
 
@@ -29,12 +30,12 @@ spring:
 
     druid:
       master:
-        jdbc-url: jdbc:mysql://192.0.0.210:3306/springboot?useSSL=true&useUnicode=true&characterEncoding=utf8&rewriteBatchedStatements=true
+        jdbc-url: jdbc:mysql://192.0.0.101:3306/springboot?useSSL=true&useUnicode=true&characterEncoding=utf8&rewriteBatchedStatements=true
         username: root
         password: 123456
 
       slave:
-        jdbc-url: jdbc:mysql://192.0.0.210:3306/springboot_1?useSSL=true&useUnicode=true&characterEncoding=utf8&rewriteBatchedStatements=true
+        jdbc-url: jdbc:mysql://192.0.0.101:3306/springboot_1?useSSL=true&useUnicode=true&characterEncoding=utf8&rewriteBatchedStatements=true
         username: root
         password: 123456
 
@@ -127,7 +128,7 @@ spring:
 
   #rabbitmq 配置
   rabbitmq:
-    host: 192.168.183.128
+    host: 192.0.0.171
     port: 5672
     username: admin
     password: 123456
@@ -216,3 +217,7 @@ elasticsearch:
   pool: 5
   cluster:
     name: my-application
+
+
+test:
+  name: Tom

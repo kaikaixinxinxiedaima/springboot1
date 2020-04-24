@@ -32,10 +32,10 @@ public class WebSocketController {
     private static final SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     //页面请求
-    @GetMapping("/socket/{cid}")
-    public ModelAndView socket(@PathVariable String cid) {
-        ModelAndView mav=new ModelAndView("websocket/websocket_test");
-        mav.addObject("cid", cid);
+    @GetMapping("/socket/{from}")
+    public ModelAndView socket(@PathVariable String from) {
+        ModelAndView mav=new ModelAndView("mq/mq_test");
+        mav.addObject("from", from);
         return mav;
     }
 

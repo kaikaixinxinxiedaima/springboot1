@@ -73,7 +73,7 @@ public class BookController {
 
     @RequestMapping(value="/list2/{id}")
     @ResponseBody
-    @MoreDataSource
+    @MoreDataSource(name = "master")
     public Book list2(@PathVariable(value = "id") Integer id){
         Book book = bookService.findById(id);
         return book;
@@ -81,6 +81,7 @@ public class BookController {
 
     @RequestMapping(value="/update/{id}")
     @ResponseBody
+    @MoreDataSource
     public Book update(@PathVariable(value = "id") Integer id){
         Book book = bookService.updateById(id);
         return book;
@@ -88,7 +89,6 @@ public class BookController {
 
     @RequestMapping(value="/update2/{id}")
     @ResponseBody
-    @MoreDataSource
     public Book update2(@PathVariable(value = "id") Integer id){
         Book book = bookService.updateById(id);
         return book;

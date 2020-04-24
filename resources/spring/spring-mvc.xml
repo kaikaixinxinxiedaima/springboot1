@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
+		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+    <description>Spring Configuration</description>
+
+    <!--setter-->
+    <!--
+        <bean id="testController" class="com.test.day.TestController"  autowire="constructor">
+            &lt;!&ndash;<property name="testService"  ref="testService"></property>&ndash;&gt;
+        </bean>
+
+        <bean id="testService" class="com.test.day.TestService">
+
+        </bean>
+    -->
+
+
+    <!--构造器-->
+    <!--    <bean name="testController" class="com.test.day.TestController">
+            <constructor-arg  name="testService" index="0" ref="testService"></constructor-arg>
+        </bean>-->
+
+    <!--静态工厂-->
+    <!--
+        <bean name="testController" class="com.test.day.TestController">
+            <property name="testService" ref="testService"></property>
+        </bean>
+    -->
+
+    <!--    <bean name="testController" class="com.test.day.TestController">
+            <property name="testService" ref="testService"></property>
+        </bean>
+
+        &lt;!&ndash;注意这里注入的是静态工厂类&ndash;&gt;
+        <bean name="testService" factory-bean="examplesFactory" factory-method="getTestService">
+
+        </bean>
+
+        <bean name="examplesFactory" class="com.test.day.ExamplesFactory">
+
+        </bean>-->
+
+    <!--    <context:component-scan base-package="com.test.day">-->
+    <!--&lt;!&ndash;        <context:include-filter type="annotation" expression="org.springframework.stereotype.Controller"/>&ndash;&gt;-->
+    <!--        <context:include-filter type="regex" expression="com.test.day.LogAsp"/>-->
+    <!--    </context:component-scan>-->
+
+    <aop:aspectj-autoproxy expose-proxy="true"></aop:aspectj-autoproxy>
+
+
+</beans>

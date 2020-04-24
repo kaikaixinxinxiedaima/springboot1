@@ -12,7 +12,6 @@ import org.springframework.context.annotation.Configuration;
  *       *** bean name为方法名 ****
  */
 
-/*
 @Configuration
 public class FanoutRabbitConfig {
 
@@ -46,4 +45,3 @@ public class FanoutRabbitConfig {
         return BindingBuilder.bind(queueMessageB).to(fanoutExchange);
     }
 }
-*/

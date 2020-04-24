@@ -563,5 +563,4 @@ public class Test1 {
             return singleton;
         }
     }
-
 }

@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Getting Started: Serving Web Content</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <script src="/views/js/jquery-1.8.3.js"></script>
+    <style>
+
+
+    </style>
+</head>
+<body style="text-align: center">
+<div style="width:35%;height:400px;overflow:scroll;background:#cee9da;text-align: center;margin:auto " id="f">
+    <table id="context" style="" width="100%" class="a">
+
+    </table>
+</div>
+
+<hr>
+<table style="text-align: right;margin:auto">
+    <tr>
+        <td>
+            发送给：<input id="to" style="width: 300px"><br>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            内容：<textarea id="send" rows="4" style="width: 300px;height: 100px" ></textarea>
+        </td>
+    </tr>
+    <tr>
+        <td style="text-align: center">
+            <button style="color: #40AFFE" onclick="sendMessage()">发送消息</button>
+        </td>
+    </tr>
+</table>
+
+</body>
+<script>
+    var user = "[[${from}]]";
+    var socket;
+    var socketUrl = "ws://localhost:80/websocket/"+user;
+
+    //Thymeleaf js取值
+    if (typeof (WebSocket) == "undefined") {
+        console.log("您的浏览器不支持WebSocket");
+    } else {
+        console.log("您的浏览器支持WebSocket");
+
+        createWebSocket();
+        function createWebSocket() {
+            try {
+                socket = new WebSocket(socketUrl);
+                init();
+            } catch(e) {
+                alert("it error");
+                console.log('catch'+e);
+                reconnect(socketUrl);
+            }
+        }
+    }
+
+    //初始化
+    function init() {
+        //打开事件,连接建立时触发
+        socket.onopen = function () {
+            console.log("Socket 已打开");
+            //心跳检测重置
+            heartCheck.reset().start();
+            //socket.send("这是来自客户端的消息" + location.href + new Date());
+        };
+
+        //获得消息事件
+        socket.onmessage = function (msg) {
+            var data = JSON.parse(msg.data || {});
+
+            if(data && data.cmd == 'heartcheck'){
+                console.log(data.msgTxt + " " + data.msgDate);
+            }else{
+                //发现消息进入    开始处理前端触发逻辑
+                if (data && data.content) {
+                    var html =
+                        "<tr style='text-align: left'>" +
+                        "   <td><strong>" + timeStampString(data.date) + "</strong><span style='margin-left: 50px;color: red'>" + data.content + "</span></td>" +
+                        "</tr>";
+
+                    $("#context").append(html);
+                }
+            }
+
+            //如果获取到消息，心跳检测重置
+            heartCheck.reset().start();
+        };
+
+        //关闭事件
+        socket.onclose = function () {
+            console.log("Socket已关闭");
+            reconnect(socketUrl);
+        };
+
+        //发生了错误事件
+        socket.onerror = function () {
+            alert("Socket发生了错误");
+            reconnect(socketUrl);
+
+            //此时可以尝试刷新页面
+        }
+        //离开页面时，关闭socket
+        //jquery1.8中已经被废弃，3.0中已经移除
+        // $(window).unload(function(){
+        //     socket.close();
+        //});
+    }
+
+    function sendMessage() {
+        $.ajax({
+            type: "GET",
+            url: "/testmq/send",
+            data: {
+                message: $("#send").val(),
+                to: $("#to").val(),
+                from: user
+            },
+            dataType: "json",
+            success: function (data) {
+                console.log("发送成功")
+                var html =
+                    "<tr style='text-align: right'>" +
+                    "   <td><strong>" + (dateToStr('',new Date())) + "</strong><span style='margin-left: 50px;color: red'>" + ($("#send").val()) + "</span></td>" +
+                    "</tr>";
+
+                $("#context").append(html);
+
+                var div = document.getElementById('f');
+                div.scrollTop = div.scrollHeight;
+            }
+        });
+    }
+
+    var lockReconnect = false;//避免重复连接
+    var tt = null;
+    function reconnect(url) {
+        if(lockReconnect) {
+            return;
+        };
+        lockReconnect = true;
+
+        //没连接上会一直重连，设置延迟避免请求过多
+        if(tt){
+            clearTimeout(tt);
+        }
+
+        tt = setTimeout(function () {
+            createWebSocket(url);
+            lockReconnect = false;
+        }, 40000);
+    }
+
+    //心跳检测
+    var heartCheck = {
+        timeout: 10000,
+        timeoutObj: null,
+        serverTimeoutObj: null,
+        reset: function(){
+            clearTimeout(this.timeoutObj);
+            //clearTimeout(this.serverTimeoutObj);
+            return this;
+        },
+        start: function () {
+            var self = this;
+            this.timeoutObj && clearTimeout(this.timeoutObj);
+            this.serverTimeoutObj && clearTimeout(this.serverTimeoutObj);
+            this.timeoutObj = setTimeout(function () {
+                //这里发送一个心跳，后端收到后，返回一个心跳消息，
+                //onmessage拿到返回的心跳就说明连接正常
+                console.log("客户端发送心跳 " + dateToStr("",new Date()));
+                socket.send(JSON.stringify({"doWhat": "testLink"}));
+                self.serverTimeoutObj = setTimeout(function () {
+                    socket.close();
+                    // createWebSocket();
+                }, self.timeout);
+            }, this.timeout)
+        }
+    }
+
+    var dateToStr = function(formatStr, date){
+        /**
+         * 日期对象转换为指定格式的字符串
+         * f 日期格式,格式定义如下 yyyy-MM-dd HH:mm:ss
+         *  date Date日期对象, 如果缺省，则为当前时间
+         *
+         * YYYY/yyyy/YY/yy 表示年份
+         * MM/M 月份
+         * W/w 星期
+         * dd/DD/d/D 日期
+         * hh/HH/h/H 时间
+         * mm/m 分钟
+         * ss/SS/s/S 秒
+         * string 指定格式的时间字符串
+         */
+        formatStr = arguments[0] || "yyyy-MM-dd HH:mm:ss";
+        date = arguments[1] || new Date();
+        var str = formatStr;
+        var Week = ['日','一','二','三','四','五','六'];
+        str=str.replace(/yyyy|YYYY/,date.getFullYear());
+        str=str.replace(/yy|YY/,(date.getYear() % 100)>9?(date.getYear() % 100).toString():'0' + (date.getYear() % 100));
+        str=str.replace(/MM/,date.getMonth()>=9?(date.getMonth() + 1):'0' + (date.getMonth() + 1));
+        str=str.replace(/M/g,date.getMonth());
+        str=str.replace(/w|W/g,Week[date.getDay()]);
+
+        str=str.replace(/dd|DD/,date.getDate()>9?date.getDate().toString():'0' + date.getDate());
+        str=str.replace(/d|D/g,date.getDate());
+
+        str=str.replace(/hh|HH/,date.getHours()>9?date.getHours().toString():'0' + date.getHours());
+        str=str.replace(/h|H/g,date.getHours());
+        str=str.replace(/mm/,date.getMinutes()>9?date.getMinutes().toString():'0' + date.getMinutes());
+        str=str.replace(/m/g,date.getMinutes());
+
+        str=str.replace(/ss|SS/,date.getSeconds()>9?date.getSeconds().toString():'0' + date.getSeconds());
+        str=str.replace(/s|S/g,date.getSeconds());
+
+        return str;
+    }
+
+
+    var timeStampString = function (time){
+        /**
+         * 时间戳转成时间
+         *  time
+         * @returns
+         */
+        var datetime = new Date();
+        datetime.setTime(time);
+        var year = datetime.getFullYear();
+        var month = datetime.getMonth() + 1 < 10 ? "0" + (datetime.getMonth() + 1) : datetime.getMonth() + 1;
+        var date = datetime.getDate() < 10 ? "0" + datetime.getDate() : datetime.getDate();
+        var hour = datetime.getHours()< 10 ? "0" + datetime.getHours() : datetime.getHours();
+        var minute = datetime.getMinutes()< 10 ? "0" + datetime.getMinutes() : datetime.getMinutes();
+        var second = datetime.getSeconds()< 10 ? "0" + datetime.getSeconds() : datetime.getSeconds();
+        return year + "-" + month + "-" + date+" "+hour+":"+minute+":"+second;
+    }
+
+</script>
+</html>
