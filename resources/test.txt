@@ -1,0 +1,43 @@
+input {
+    beats {
+        port => 5044
+    }
+
+    jdbc {
+        # jdbc驱动包位置
+        jdbc_driver_library => "mysql-connector-java-8.0.15.jar"
+        # 驱动包
+        jdbc_driver_class => "com.mysql.jdbc.Driver"
+        # MySQL连接信息
+        jdbc_connection_string => "jdbc:mysql://192.0.0.101:3306/springboot?useUnicode=true&characterEncoding=utf-8&serverTimezone=UTC&allowMultiQueries=true"
+        #设置时区
+        jdbc_default_timezone => "Asia/Shanghai"
+        # 用户名
+        jdbc_user => "root"
+        # 密码
+        jdbc_password => "123456"
+        # 定时任务，默认一分钟
+        schedule => "* * * * *"
+        # 执行语句
+        statement => "select * from book where update_time > :sql_last_value and update_time < NOW() order by update_time"
+    }
+}
+
+output {
+    elasticsearch {
+        hosts => ["192.0.0.171:9200"]
+        index => "book"
+        document_id => "%{id}"
+    }
+}
+
+
+
+docker run -p 5044:5044 --name logstash -d \
+    -v /root/logstash/my-log.conf:/usr/share/logstash/pipeline/logstash.conf \
+     -v /root/logstash/logstash.yml:/usr/share/logstash/config/logstash.yml \
+    docker.elastic.co/logstash/logstash:7.4.1
+
+
+
+docker cp mysql-connector-java-8.0.15.jar logstash:/usr/share/logstash/logstash-core/lib/jars

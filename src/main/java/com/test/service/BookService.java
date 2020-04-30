@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 
 @Service
 public class BookService {
@@ -17,6 +19,11 @@ public class BookService {
     public Book findById(Integer id){
         Book book = bookMapper.selectByPrimaryKey(id);
         return book;
+    }
+
+    public List<Book> findByKeyWord(String keyword){
+        List<Book> books = bookMapper.findByKeyWord(keyword);
+        return books;
     }
 
     @Transactional

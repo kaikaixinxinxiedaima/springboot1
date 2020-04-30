@@ -3,15 +3,12 @@ package com.test.day;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.stereotype.Component;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(value = SpringJUnit4ClassRunner.class) //在使用所有注释前必须使用@RunWith(SpringJUnit4ClassRunner.class),让测试运行于spring测试环境
-@TestPropertySource("classpath:test.properties")//用来指定加载的Spring配置文件的位置,会加载默认配置文件
+@TestPropertySource("classpath:test.txt")//用来指定加载的Spring配置文件的位置,会加载默认配置文件
 @SpringBootTest
 public class Test1 {
 

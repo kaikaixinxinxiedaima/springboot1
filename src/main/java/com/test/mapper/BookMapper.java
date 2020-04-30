@@ -11,7 +11,9 @@ import java.util.List;
 public interface BookMapper extends BaseMapper<Book> {
 
 
-    public int insertList(List<Book> books);
+    int insertList(List<Book> books);
+
+    List<Book> findByKeyWord(String keyword);
 
 
     /*int deleteByPrimaryKey(Integer id);

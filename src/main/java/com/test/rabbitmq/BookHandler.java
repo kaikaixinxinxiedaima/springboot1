@@ -4,7 +4,6 @@ package com.test.rabbitmq;
 import com.alibaba.fastjson.JSONObject;
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
-import com.sun.xml.internal.bind.v2.TODO;
 import com.test.rabbitmq.vo.ChatMsg;
 import com.test.websocket.WebSocketServer;
 import org.slf4j.Logger;

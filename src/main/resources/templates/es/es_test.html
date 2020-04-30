@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Getting Started: Serving Web Content</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <script src="/views/js/jquery-1.8.3.js"></script>
+    <style>
+
+
+    </style>
+</head>
+<body style="text-align: center">
+
+
+<table style="text-align: right;margin:auto">
+    <tr>
+        <td>
+            关键词：<input id="keyword" style="width: 300px"><span style="color: red" id="d"></span><br>
+        </td>
+    </tr>
+
+    <tr>
+        <td style="text-align: center">
+            <button style="color: #40AFFE" onclick="search('mysql')">mysql</button>
+        </td>
+        <td style="text-align: left">
+            <button style="color: #40AFFE" onclick="search('es')">es</button>
+        </td>
+        <td style="text-align: left">
+            <button style="color: #40AFFE" onclick="searchHit()">es高亮</button>
+        </td>
+    </tr>
+</table>
+<hr>
+<div style="width:35%;height:400px;overflow:scroll;background:#cee9da;text-align: center;margin:auto " id="f">
+    <table id="context" style="" width="100%" class="a">
+
+    </table>
+</div>
+
+</body>
+<script>
+
+
+    function search(type) {
+        keyword = $("#keyword").val();
+
+        if(!keyword){
+            return false;
+        }
+
+        data =  {
+            type: type,keyword: keyword
+        }
+
+        $.ajax({
+            type: "POST",
+            url: "/searchBook/search",
+            data: JSON.stringify(data),
+
+            contentType: "application/json",
+            dataType: "json",
+            success: function (data) {
+                $("#context").html("");
+                if(data && data.lits){
+                    var html = "";
+                    for (var i = 0; i < data.lits.length; i++) {
+                        var book = data.lits[i];
+                        html +=
+                            "<tr style='text-align: left'>" +
+                            "   <td><strong>" + "书名：" + book.bookName + "</strong>" +
+                            "<span style='margin-left: 50px'>" + "作者：" + book.author + "</span>" +
+                            "<span style='margin-left: 50px'>" + "内容：" + book.bookContent + "</span></td>" +
+                            "</tr>";
+                    }
+                }
+
+                $("#context").append(html);
+                $("#d").html(data.lits.length + "条" + "  用时" + data.searchTime + "ms")
+
+                var div = document.getElementById('f');
+                div.scrollTop = div.scrollHeight;
+            }
+        });
+    }
+
+    function searchHit() {
+        keyword = $("#keyword").val();
+
+        if(!keyword){
+            return false;
+        }
+
+        data =  {
+            keyword: keyword
+        }
+
+        $.ajax({
+            type: "POST",
+            url: "/searchBook/searchHit",
+            data: JSON.stringify(data),
+
+            contentType: "application/json",
+            dataType: "json",
+            success: function (data) {
+                $("#context").html("");
+                if(data && data.lits){
+                    var html = "";
+                    for (var i = 0; i < data.lits.length; i++) {
+                        var book = data.lits[i];
+                        html +=
+                            "<tr style='text-align: left'>" +
+                            "   <td><strong>" + "书名：" + book.bookName + "</strong>" +
+                            "<span style='margin-left: 50px'>" + "作者：" + book.author + "</span>" +
+                            "<span style='margin-left: 50px'>" + "内容：" + book.bookContent + "</span></td>" +
+                            "</tr>";
+                    }
+                }
+
+                $("#context").append(html);
+                $("#d").html(data.lits.length + "条" + "  用时" + data.searchTime + "ms")
+
+                var div = document.getElementById('f');
+                div.scrollTop = div.scrollHeight;
+            }
+        });
+    }
+
+
+    var dateToStr = function(formatStr, date){
+        /**
+         * 日期对象转换为指定格式的字符串
+         * f 日期格式,格式定义如下 yyyy-MM-dd HH:mm:ss
+         *  date Date日期对象, 如果缺省，则为当前时间
+         *
+         * YYYY/yyyy/YY/yy 表示年份
+         * MM/M 月份
+         * W/w 星期
+         * dd/DD/d/D 日期
+         * hh/HH/h/H 时间
+         * mm/m 分钟
+         * ss/SS/s/S 秒
+         * string 指定格式的时间字符串
+         */
+        formatStr = arguments[0] || "yyyy-MM-dd HH:mm:ss";
+        date = arguments[1] || new Date();
+        var str = formatStr;
+        var Week = ['日','一','二','三','四','五','六'];
+        str=str.replace(/yyyy|YYYY/,date.getFullYear());
+        str=str.replace(/yy|YY/,(date.getYear() % 100)>9?(date.getYear() % 100).toString():'0' + (date.getYear() % 100));
+        str=str.replace(/MM/,date.getMonth()>=9?(date.getMonth() + 1):'0' + (date.getMonth() + 1));
+        str=str.replace(/M/g,date.getMonth());
+        str=str.replace(/w|W/g,Week[date.getDay()]);
+
+        str=str.replace(/dd|DD/,date.getDate()>9?date.getDate().toString():'0' + date.getDate());
+        str=str.replace(/d|D/g,date.getDate());
+
+        str=str.replace(/hh|HH/,date.getHours()>9?date.getHours().toString():'0' + date.getHours());
+        str=str.replace(/h|H/g,date.getHours());
+        str=str.replace(/mm/,date.getMinutes()>9?date.getMinutes().toString():'0' + date.getMinutes());
+        str=str.replace(/m/g,date.getMinutes());
+
+        str=str.replace(/ss|SS/,date.getSeconds()>9?date.getSeconds().toString():'0' + date.getSeconds());
+        str=str.replace(/s|S/g,date.getSeconds());
+
+        return str;
+    }
+
+
+    var timeStampString = function (time){
+        /**
+         * 时间戳转成时间
+         *  time
+         * @returns
+         */
+        var datetime = new Date();
+        datetime.setTime(time);
+        var year = datetime.getFullYear();
+        var month = datetime.getMonth() + 1 < 10 ? "0" + (datetime.getMonth() + 1) : datetime.getMonth() + 1;
+        var date = datetime.getDate() < 10 ? "0" + datetime.getDate() : datetime.getDate();
+        var hour = datetime.getHours()< 10 ? "0" + datetime.getHours() : datetime.getHours();
+        var minute = datetime.getMinutes()< 10 ? "0" + datetime.getMinutes() : datetime.getMinutes();
+        var second = datetime.getSeconds()< 10 ? "0" + datetime.getSeconds() : datetime.getSeconds();
+        return year + "-" + month + "-" + date+" "+hour+":"+minute+":"+second;
+    }
+
+</script>
+</html>

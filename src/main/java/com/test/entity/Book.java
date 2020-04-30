@@ -1,14 +1,17 @@
 package com.test.entity;
 
 import com.test.annotation.Init;
+import lombok.Data;
 
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.io.Serializable;
+import java.util.Date;
 
 @Table(name="book")
+@Data
 public class Book implements Serializable ,Cloneable{
 
 
@@ -27,24 +30,18 @@ public class Book implements Serializable ,Cloneable{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Init("测试书名")
+//    @Init("测试书名")
     private String bookName;
 
-    public Integer getId() {
-        return id;
-    }
+    private String bookContent;
 
-    public void setId(Integer id) {
-        this.id = id;
-    }
+    private String author;
 
-    public String getBookName() {
-        return bookName;
-    }
+    private Date createTime;
 
-    public void setBookName(String bookName) {
-        this.bookName = bookName == null ? null : bookName.trim();
-    }
+    private Date updateTime;
+
+
 
     public Book() {
 
