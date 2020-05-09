@@ -10,6 +10,7 @@ import com.test.util.Html2TextUtils;
 import lombok.Data;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.DisMaxQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
@@ -17,6 +18,7 @@ import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightField;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
 import org.springframework.data.elasticsearch.core.SearchResultMapper;
@@ -61,8 +63,8 @@ public class EsTestController {
             map.put("lits", bookList);
         }else if(type.equalsIgnoreCase("es")){
             BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
-            queryBuilder.should(QueryBuilders.matchPhraseQuery("bookName", param.getKeyword()));
-            queryBuilder.should(QueryBuilders.matchPhraseQuery("bookContent", param.getKeyword()));
+            queryBuilder.should(QueryBuilders.matchQuery("bookName", param.getKeyword()));
+            queryBuilder.should(QueryBuilders.matchQuery("bookContent", param.getKeyword()));
 
             String s = queryBuilder.toString();
             System.out.println("查询语句："+s);
@@ -87,13 +89,15 @@ public class EsTestController {
         Map<String, Object> map = new HashMap<>();
 
         BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
-        queryBuilder.should(QueryBuilders.matchPhraseQuery("bookName", param.getKeyword()))
-                    .should(QueryBuilders.queryStringQuery("\""+param.getKeyword()+"\"").defaultField("bookContent"));
+        queryBuilder.should(QueryBuilders.matchQuery("bookName", param.getKeyword()))
+                    .should(QueryBuilders.matchQuery("bookContent", param.getKeyword()));
 
         NativeSearchQuery nativeSearchQuery=new NativeSearchQueryBuilder()
                 .withQuery(queryBuilder)
                 .withHighlightFields(new HighlightBuilder.Field("bookContent"),new HighlightBuilder.Field("bookName"))
-                .withHighlightBuilder(new HighlightBuilder().preTags("<span style='color:red'>").postTags("</span>")).build();
+                .withHighlightBuilder(new HighlightBuilder().preTags("<span style='color:red'>").postTags("</span>"))
+                .withPageable(PageRequest.of(1, 5))
+                .build();
 
         String s = queryBuilder.toString();
         System.out.println("查询语句："+s);
@@ -161,6 +165,94 @@ public class EsTestController {
         map.put("searchTime", millis);
         return map;
     }
+
+
+
+
+
+//    @PostMapping("/matchSearchHit")
+//    @ResponseBody
+//    public Map matchSearchHit(@RequestBody Param param){
+//        StopWatch stopWatch = new StopWatch();
+//        stopWatch.start();
+//        Map<String, Object> map = new HashMap<>();
+//
+//        DisMaxQueryBuilder disMaxQueryBuilder = QueryBuilders.disMaxQuery();
+//
+//        queryBuilder.should(QueryBuilders.matchPhraseQuery("bookName", param.getKeyword()))
+//                .should(QueryBuilders.matchPhraseQuery("bookContent", param.getKeyword()));
+//
+//        NativeSearchQuery nativeSearchQuery=new NativeSearchQueryBuilder()
+//                .withQuery(queryBuilder)
+//                .withHighlightFields(new HighlightBuilder.Field("bookContent"),new HighlightBuilder.Field("bookName"))
+//                .withHighlightBuilder(new HighlightBuilder().preTags("<span style='color:red'>").postTags("</span>")).build();
+//
+//        String s = queryBuilder.toString();
+//        System.out.println("查询语句："+s);
+//
+//
+//        AggregatedPage<EsBook> esBooks = elasticsearchTemplate.queryForPage(nativeSearchQuery, EsBook.class, new SearchResultMapper() {
+//            @Override
+//            public <T> AggregatedPage<T> mapResults(SearchResponse response, Class<T> clazz, Pageable pageable) {
+//                List<EsBook> esBookList = new LinkedList<EsBook>();
+//                SearchHits hits = response.getHits();
+//                for (SearchHit searchHit : hits) {
+//                    if (hits.getHits().length <= 0) {
+//                        return null;
+//                    }
+//                    Map<String, Object> sourceAsMap = searchHit.getSourceAsMap();
+//                    String bookName= (String) sourceAsMap.get("bookName");
+//                    String bookContent= (String) sourceAsMap.get("bookContent");
+//                    String author= (String) sourceAsMap.get("author");
+//
+//                    System.out.println(bookName);
+//                    System.out.println(bookContent);
+//
+//                    EsBook esBook = new EsBook();
+//
+//                    HighlightField contentHighlightField = searchHit.getHighlightFields().get("bookContent");
+//                    if(contentHighlightField==null){
+//                        esBook.setBookContent(bookContent);
+//                    }else{
+//                        String highLightMessage = searchHit.getHighlightFields().get("bookContent").fragments()[0].toString();
+//                        esBook.setBookContent(highLightMessage);
+////                        esBook.setBookContent(Html2TextUtils.stripHtml(highLightMessage).replaceAll("_",""));
+//                    }
+//
+//                    HighlightField nameHighlightField = searchHit.getHighlightFields().get("bookName");
+//                    if(nameHighlightField==null){
+//                        esBook.setBookName(bookName);
+//                    }else{
+//                        esBook.setBookName(searchHit.getHighlightFields().get("bookName").fragments()[0].toString());
+//                    }
+//
+//                    esBook.setAuthor(author);
+//
+//                    esBookList.add(esBook);
+//                }
+//                if (esBookList.size() > 0) {
+//                    return new AggregatedPageImpl<T>((List<T>) esBookList);
+//                }
+//                return null;
+//
+//            }
+//
+//            @Override
+//            public <T> T mapSearchHit(SearchHit searchHit, Class<T> aClass) {
+//                return null;
+//            }
+//        });
+//
+//        if(esBooks != null){
+//            List<EsBook> bookList = esBooks.getContent();
+//            map.put("lits", bookList);
+//        }
+//
+//        stopWatch.stop();
+//        long millis = stopWatch.getTotalTimeMillis();
+//        map.put("searchTime", millis);
+//        return map;
+//    }
 
 
     @Data

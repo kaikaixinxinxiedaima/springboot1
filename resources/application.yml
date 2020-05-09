@@ -135,17 +135,17 @@ spring:
 #    store-type: redis
 
   #rabbitmq 配置
-  rabbitmq:
-    host: 192.0.0.171
-    port: 5672
-    username: admin
-    password: 123456
-    #虚拟主机
-    virtual-host: /
-    listener:
-      simple:
-        #手动ACK
-        acknowledge-mode: manual
+#  rabbitmq:
+#    host: 192.0.0.171
+#    port: 5672
+#    username: admin
+#    password: 123456
+#    #虚拟主机
+#    virtual-host: /
+#    listener:
+#      simple:
+#        #手动ACK
+#        acknowledge-mode: manual
 
 
   data:

@@ -34,10 +34,68 @@ output {
 
 
 docker run -p 5044:5044 --name logstash -d \
-    -v /root/logstash/my-log.conf:/usr/share/logstash/pipeline/logstash.conf \
-     -v /root/logstash/logstash.yml:/usr/share/logstash/config/logstash.yml \
+    -v /root/es-docker-config/logstash.conf:/usr/share/logstash/pipeline/logstash.conf \
+     -v /root/es-docker-config/logstash.yml:/usr/share/logstash/config/logstash.yml \
     docker.elastic.co/logstash/logstash:7.4.1
 
 
 
 docker cp mysql-connector-java-8.0.15.jar logstash:/usr/share/logstash/logstash-core/lib/jars
+
+
+
+
+curl -H "Content-Type: application/json" -XPUT http://192.0.0.171:9200/book -d '{
+                                                "index" : {
+                                                    "analysis" : {
+                                                        "analyzer" : {
+                                                            "default" : {
+                                                                "type" : "keyword"
+                                                            }
+                                                        }
+                                                   }
+                                                }
+                                            }'
+
+
+curl -H "Content-Type: application/json" -XPUT http://192.0.0.171:9200/book -d '{"settings": {"index.analysis.analyzer.default.type": "ik_max_word"}}
+
+
+
+
+
+
+
+
+
+
+'{
+  "settings": {
+
+    "index.analysis.analyzer.default.type": "ik_max_word"
+
+   },
+  "mappings": {
+    "doc": {
+      "properties": {
+        "id": {
+          "type": "long"
+        },
+
+        "bookName": {
+          "type": "text",
+          "analyzer": "ik_max_word"
+
+        },
+
+        "bookContent": {
+
+          "type": "text",
+          "analyzer": "ik_max_word"
+
+        }
+      }
+    }
+  }
+}'
+

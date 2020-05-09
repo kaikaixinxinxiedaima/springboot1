@@ -27,13 +27,13 @@ public class EsBook implements Serializable{
     @Id
     private Integer id;
 
-    @Field(type = FieldType.Text, analyzer = "ik_max_word", searchAnalyzer = "ik_max_word")
+    @Field(type = FieldType.Text, analyzer = "ik_max_word")
     private String bookName;
 
-    @Field(type = FieldType.Text, analyzer = "ik_max_word" , searchAnalyzer = "ik_max_word")
+    @Field(type = FieldType.Text, analyzer = "ik_max_word")
     private String bookContent;
 
-    @Field(type = FieldType.Text, analyzer = "ik_max_word" , searchAnalyzer = "ik_max_word")
+    @Field(type = FieldType.Text, analyzer = "ik_max_word")
     private String author;
 
     @Field(type = FieldType.Date, format = DateFormat.custom,
