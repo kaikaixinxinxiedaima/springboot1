@@ -5,6 +5,9 @@ import com.test.annotation.MoreDataSource;
 import com.test.entity.Book;
 //import com.test.rabbitmq.TopicRabbitConfig;
 import com.test.service.BookService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.authz.annotation.RequiresRoles;
@@ -71,6 +74,8 @@ public class BookController {
         return book;
     }
 
+    @ApiOperation(value = "根据id查询图书",notes = "采用restfull风格",httpMethod = "GET")
+    @ApiImplicitParam(name = "id",value = "主键",dataType="int",required = true)
     @RequestMapping(value="/list2/{id}")
     @ResponseBody
     @MoreDataSource(name = "master")

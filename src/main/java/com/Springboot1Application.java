@@ -11,11 +11,15 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Import;
+import org.springframework.core.env.Environment;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import tk.mybatis.spring.annotation.MapperScan;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Date;
 
 //exclude = DataSourceAutoConfiguration.class
@@ -28,14 +32,28 @@ public class Springboot1Application extends SpringBootServletInitializer {
 
     private static Logger logger = LoggerFactory.getLogger(Springboot1Application.class);
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws UnknownHostException {
         //java.lang.IllegalStateException: availableProcessors is already set to [4], rejecting [4] 解决
         //System.setProperty("es.set.netty.runtime.available.processors", "false");
 
         //看这里，加上这句话
         System.setProperty("es.set.netty.runtime.available.processors","false");
-        SpringApplication.run(Springboot1Application.class, args);
-        logger.info("项目启动成功！~~~~~~~~~~~~~~~~~ {}",DateUtils.getCurrentDateMillTime());
+        ConfigurableApplicationContext application = SpringApplication.run(Springboot1Application.class, args);
+//        logger.info("项目启动成功！~~~~~~~~~~~~~~~~~ {}",DateUtils.getCurrentDateMillTime());
+
+        /*打印sw2*/
+        Environment env = application.getEnvironment();
+        String ip = InetAddress.getLocalHost().getHostAddress();
+        String port = env.getProperty("server.port");
+        String path = env.getProperty("server.servlet.context-path");
+
+        logger.info("\n----------------------------------------------------------\n\t" +
+                "项目启动成功！~~~~~~~~~~~~~~~~~\n\t" +
+                "Local: \t\thttp://localhost:" + port + path + "/\n\t" +
+                "External: \thttp://" + ip + ":" + port + path + "/\n\t" +
+                "swagger-ui: \thttp://" + ip + ":" + port + path + "/swagger-ui.html\n\t" +
+                "Doc: \t\thttp://" + ip + ":" + port + path + "/doc.html\n" +
+                "----------------------------------------------------------");
     }
 
     @Override//为了打包springboot项目

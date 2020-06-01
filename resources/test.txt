@@ -4,21 +4,21 @@ input {
     }
 
     jdbc {
-        # jdbcÇı¶¯°üÎ»ÖÃ
+        # jdbcï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î»ï¿½ï¿½
         jdbc_driver_library => "mysql-connector-java-8.0.15.jar"
-        # Çı¶¯°ü
+        # ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         jdbc_driver_class => "com.mysql.jdbc.Driver"
-        # MySQLÁ¬½ÓĞÅÏ¢
+        # MySQLï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï¢
         jdbc_connection_string => "jdbc:mysql://192.0.0.101:3306/springboot?useUnicode=true&characterEncoding=utf-8&serverTimezone=UTC&allowMultiQueries=true"
-        #ÉèÖÃÊ±Çø
+        #ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½
         jdbc_default_timezone => "Asia/Shanghai"
-        # ÓÃ»§Ãû
+        # ï¿½Ã»ï¿½ï¿½ï¿½
         jdbc_user => "root"
-        # ÃÜÂë
+        # ï¿½ï¿½ï¿½ï¿½
         jdbc_password => "123456"
-        # ¶¨Ê±ÈÎÎñ£¬Ä¬ÈÏÒ»·ÖÖÓ
+        # ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½Ä¬ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½
         schedule => "* * * * *"
-        # Ö´ĞĞÓï¾ä
+        # Ö´ï¿½ï¿½ï¿½ï¿½ï¿½
         statement => "select * from book where update_time > :sql_last_value and update_time < NOW() order by update_time"
     }
 }
@@ -99,3 +99,74 @@ curl -H "Content-Type: application/json" -XPUT http://192.0.0.171:9200/book -d '
   }
 }'
 
+
+
+cat > /etc/sysctl.d/k8s.conf << EOF
+> net.bridge.bridge-nf-call-ip6tables = 1
+> net.bridge.beidge-nf-call-iptables = 1
+> EOF
+
+
+# master
+kubeadm init --kubernetes-version=1.16.4  \
+--apiserver-advertise-address=192.0.0.171   \
+--image-repository registry.aliyuncs.com/google_containers  \
+--service-cidr=10.1.0.0/16   \
+--pod-network-cidr=10.244.0.0/16
+
+
+
+
+
+
+    kubeadm join 192.0.0.171:6443 --token j6sq7z.f1e94nlkohfuk413 \
+        --discovery-token-ca-cert-hash sha256:9ef84c7bacc1a2cc3f90520e42f7bb633e7f5c33c514939b98f699218dc12d8f
+
+
+
+# æµ‹è¯•
+kubectl create deployment nginx --image=nginx
+
+kubectl expose deployment nginx --port=80 --type=NodePort
+
+
+
+# æŸ¥çœ‹pod
+kubectl get pods --all-namespaces -o wide
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ #å¸è½½docker
+
+ 1.æŸ¥è¯¢å®‰è£…è¿‡çš„åŒ…
+
+ yum list installed | grep docker
+
+ docker-engine.x86_64                 17.03.0.ce-1.el7.centos         @dockerrepo
+
+
+
+ 2.åˆ é™¤å®‰è£…çš„è½¯ä»¶åŒ…
+
+ yum -y remove docker-engine.x86_64
+
+
+
+ 3.åˆ é™¤é•œåƒ/å®¹å™¨ç­‰
+
+ rm -rf /var/lib/docker

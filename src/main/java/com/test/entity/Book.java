@@ -53,7 +53,7 @@ public class Book implements Serializable ,Cloneable{
     }
 
     @Override
-    public Object clone() throws CloneNotSupportedException {
+    public Book clone() throws CloneNotSupportedException {
         return (Book)super.clone();
     }
 
