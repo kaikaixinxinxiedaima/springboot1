@@ -11,17 +11,35 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class KafkaConsumer {
-	private static Logger logger = LoggerFactory.getLogger(KafkaConsumer.class);
+    private static Logger logger = LoggerFactory.getLogger(KafkaConsumer.class);
 
-	@KafkaListener(topics = {"topic_log"})
-     public void listen (ConsumerRecord<?, ?> record, Acknowledgment acknowledgment, Consumer<?, ?> consumer){
-		try {
-			String logStr = (String) record.value();
-			acknowledgment.acknowledge();
-			logger.info("kafka接收消息：{}", logStr);
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error("kafka消息消费失败：", e);
-		}
-     }
+    @KafkaListener(topics = {"topic_log"})
+    public void listen(ConsumerRecord<?, ?> record, Acknowledgment acknowledgment, Consumer<?, ?> consumer) {
+        try {
+            String logStr = (String) record.value();
+            acknowledgment.acknowledge();
+            logger.info("kafka接收消息：{}", logStr);
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error("kafka消息消费失败：", e);
+        }
+    }
+
+    /**
+     * log4j2 日志
+     * @param record
+     * @param acknowledgment
+     * @param consumer
+     */
+    @KafkaListener(topics = {"kafka-log"})
+    public void log_listen(ConsumerRecord<?, ?> record, Acknowledgment acknowledgment, Consumer<?, ?> consumer) {
+        try {
+            String logStr = (String) record.value();
+            acknowledgment.acknowledge();
+            logger.info("kafka接收消息：{}", logStr);
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error("kafka消息消费失败：", e);
+        }
+    }
 }
