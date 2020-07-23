@@ -43,10 +43,10 @@
         </dependency>
 
         <!--spring session 与redis应用基本环境配置,需要开启redis后才可以使用，不然启动Spring boot会报错 -->
-<!--        <dependency>
-            <groupId>org.springframework.session</groupId>
-            <artifactId>spring-session-data-redis</artifactId>
-        </dependency>-->
+        <!--        <dependency>
+                    <groupId>org.springframework.session</groupId>
+                    <artifactId>spring-session-data-redis</artifactId>
+                </dependency>-->
 
         <dependency>
             <groupId>org.apache.commons</groupId>
@@ -184,15 +184,23 @@
                     <artifactId>shiro-core</artifactId>
                     <groupId>org.apache.shiro</groupId>
                 </exclusion>
+                <exclusion>
+                    <artifactId>guava</artifactId>
+                    <groupId>com.google.guava</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>checkstyle</artifactId>
+                    <groupId>com.puppycrawl.tools</groupId>
+                </exclusion>
             </exclusions>
         </dependency>
         <!-- End  -->
 
-<!--        <dependency>
-            <groupId>commons-lang</groupId>
-            <artifactId>commons-lang</artifactId>
-            <version>2.6</version>
-        </dependency>-->
+        <!--        <dependency>
+                    <groupId>commons-lang</groupId>
+                    <artifactId>commons-lang</artifactId>
+                    <version>2.6</version>
+                </dependency>-->
 
         <!--shiro与thymelef的集成插件-->
         <dependency>
@@ -293,7 +301,7 @@
         <dependency>
             <groupId>org.springframework.kafka</groupId>
             <artifactId>spring-kafka</artifactId>
-<!--            <version>2.2.7.RELEASE</version>-->
+            <!--            <version>2.2.7.RELEASE</version>-->
         </dependency>
 
         <!--zookeeper-->
@@ -303,8 +311,13 @@
             <version>3.5.5</version>
         </dependency>
 
+        <!--任务调度相关依赖-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-quartz</artifactId>
+            <version>2.2.3.RELEASE</version>
+        </dependency>
     </dependencies>
-
 
     <build>
         <plugins>
