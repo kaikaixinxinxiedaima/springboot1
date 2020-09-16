@@ -6,10 +6,14 @@
     <groupId>com.example</groupId>
     <artifactId>demo</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <packaging>jar</packaging>
-
+    <packaging>pom</packaging>
     <name>springboot1</name>
     <description>Demo project for Spring Boot</description>
+
+    <modules>
+        <module>dubbo-client</module>
+        <module>dubbo-server</module>
+    </modules>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -318,6 +322,19 @@
             <version>2.2.3.RELEASE</version>
         </dependency>
     </dependencies>
+
+
+    <dependencyManagement>
+        <dependencies>
+            <!-- jeecg-boot-base-common -->
+            <dependency>
+                <groupId>com.example</groupId>
+                <artifactId>dubbo-server</artifactId>
+                <version>0.0.1-SNAPSHOT</version>
+            </dependency>
+
+        </dependencies>
+    </dependencyManagement>
 
     <build>
         <plugins>
