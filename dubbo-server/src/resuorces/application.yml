@@ -1,0 +1,20 @@
+# 启动端口
+server:
+  port: 9001
+
+dubbo:
+  # 提供者应用名称
+  application:
+    name: service-provider
+
+  # 使用dubbo协议暴露服务，端口为 20880
+  protocol:
+    name: dubbo
+    port: 20880
+
+  # 指定注册中心地址
+  registry:
+    address: zookeeper://127.0.0.1:2181
+  # 指定元数据中心
+  metadata-report:
+    address: zookeeper://127.0.0.1:2181
