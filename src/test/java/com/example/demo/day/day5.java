@@ -98,7 +98,6 @@ public class day5 {
             arr[i] = k;
             sort(arr,start,i-1);
             sort(arr,i+1,end);
-            Set
         }
     }
 

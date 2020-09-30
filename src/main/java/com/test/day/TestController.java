@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 public class TestController {
-    @Autowired
+    @Autowired(required = false)
     private TestService testService;
 
     //注入testService

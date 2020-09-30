@@ -10,6 +10,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.boot.web.servlet.ServletComponentScan;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Import;
@@ -25,9 +26,10 @@ import java.util.Date;
 //exclude = DataSourceAutoConfiguration.class
 @SpringBootApplication(exclude= {DataSourceAutoConfiguration.class})
 @MapperScan("com.test.mapper")//将项目中对应的mapper类的路径加进来就可以了
-@EnableScheduling //开启定时任务
+//@EnableScheduling //开启定时任务
 @Import({DataSourceConfig.class}) //数据源
 @EnableTransactionManagement //开启事务管理
+@ServletComponentScan //在程序启动时将对应的bean加载进来
 public class Springboot1Application extends SpringBootServletInitializer {
 
     private static Logger logger = LoggerFactory.getLogger(Springboot1Application.class);

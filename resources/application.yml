@@ -100,28 +100,28 @@ spring:
         login-username: root
         login-password: root
 
-  quartz:
-    #持久化到数据库方式
-    job-store-type: jdbc
-    initialize-schema: embedded
-    properties:
-      org:
-        quartz:
-          scheduler:
-            instanceName: MyScheduler
-            instanceId: AUTO
-          jobStore:
-            class: org.quartz.impl.jdbcjobstore.JobStoreTX
-            driverDelegateClass: org.quartz.impl.jdbcjobstore.StdJDBCDelegate
-            tablePrefix: QRTZ_
-            isClustered: true
-            clusterCheckinInterval: 10000
-            useProperties: false
-          threadPool:
-            class: org.quartz.simpl.SimpleThreadPool
-            threadCount: 10
-            threadPriority: 5
-            threadsInheritContextClassLoaderOfInitializingThread: true
+#  quartz:
+#    #持久化到数据库方式
+#    job-store-type: jdbc
+#    initialize-schema: embedded
+#    properties:
+#      org:
+#        quartz:
+#          scheduler:
+#            instanceName: MyScheduler
+#            instanceId: AUTO
+#          jobStore:
+#            class: org.quartz.impl.jdbcjobstore.JobStoreTX
+#            driverDelegateClass: org.quartz.impl.jdbcjobstore.StdJDBCDelegate
+#            tablePrefix: QRTZ_
+#            isClustered: true
+#            clusterCheckinInterval: 10000
+#            useProperties: false
+#          threadPool:
+#            class: org.quartz.simpl.SimpleThreadPool
+#            threadCount: 10
+#            threadPriority: 5
+#            threadsInheritContextClassLoaderOfInitializingThread: true
 
 
 #通过jpa 生成数据库表
@@ -152,7 +152,7 @@ spring:
           #最小空闲
         min-idle: 100
       #连接超时时间
-    timeout: 1000
+    timeout: 50000
 
 #  session:
 #    store-type: redis
