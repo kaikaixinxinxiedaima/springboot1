@@ -58,12 +58,12 @@ public class TestRedisLock {
                 return false;
             }
 
-            //开始续约
-//            RedisLock.autoWatchDog(lockKey, lockValue);
-            System.out.println(Thread.currentThread().getName() + "获取锁成功，执行业务");
+            //开启续约
+            RedisLock.autoWatchDog(lockKey, lockValue);
+            System.out.println(lockValue + "获取锁成功，执行业务");
 
 //            try {
-//                Thread.sleep(3000);
+//                Thread.sleep(150000);
 //            } catch (InterruptedException e) {
 //                e.printStackTrace();
 //            }
@@ -73,7 +73,7 @@ public class TestRedisLock {
             //释放锁
             boolean unLock = RedisLock.myUnLock(lockKey, lockValue);
             if(unLock){
-                System.out.println(Thread.currentThread().getName() + "业务执行完，释放锁");
+                System.out.println(lockValue + "业务执行完，释放锁");
             }
         }
 
