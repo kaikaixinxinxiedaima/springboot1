@@ -9,6 +9,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.Date;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 
@@ -31,17 +35,19 @@ public class TestRedisLock {
 
     @Test
     public void test() throws InterruptedException {
-        CountDownLatch downLatch = new CountDownLatch(20);
+        CountDownLatch downLatch = new CountDownLatch(5);
 
-        for (int i = 0; i < 20; i++) {
+        for (int i = 0; i < 5; i++) {
+            String lockValue = UUID.randomUUID().toString();
             new Thread(()->{
                 do{
 
-                }while (!func());
+                }while (!func(lockValue));
 //                func1();
 
                 downLatch.countDown();
             }).start();
+
         }
 
         downLatch.await();
@@ -49,36 +55,36 @@ public class TestRedisLock {
         System.out.println("全部任务执行完毕");
     }
 
-    public boolean func(){
-        String lockValue = UUID.randomUUID().toString();
+    public boolean func(String lockValue){
+        Boolean flag = true;
         try{
             //获取锁
-            Boolean flag = RedisLock.myTryLock(lockKey, lockValue);//本质上调用的就是setnx
+            flag = RedisLock.myTryLock(lockKey, lockValue);
             if(!flag){
                 return false;
             }
 
-            //开启续约
-            RedisLock.autoWatchDog(lockKey, lockValue);
-            System.out.println(lockValue + "获取锁成功，执行业务");
+            System.out.println(lockValue + "-"+ new SimpleDateFormat("hh:mm:ss").format(new Date()) + "-" + "-获取锁成功，执行业务");
 
-//            try {
-//                Thread.sleep(150000);
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
+            try {
+                Thread.sleep(20000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            System.out.println(lockValue + "-"+ new SimpleDateFormat("hh:mm:ss").format(new Date()) + "-" +  "-业务执行完毕");
+
         }catch (Exception e){
             e.printStackTrace();
         }finally {
             //释放锁
             boolean unLock = RedisLock.myUnLock(lockKey, lockValue);
             if(unLock){
-                System.out.println(lockValue + "业务执行完，释放锁");
+                System.out.println(lockValue + "-"+ new SimpleDateFormat("hh:mm:ss").format(new Date()) + "-" +  "-业务执行完，释放锁");
             }
         }
 
         //标识获取锁成功
-        return true;
+        return flag;
     }
 
     public void func1(){

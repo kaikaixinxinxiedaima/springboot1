@@ -18,21 +18,21 @@ import org.springframework.stereotype.Component;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 /**
  * redis实现分布式锁
- * 基于setnx lua
+ * 基于hset lua
  */
 @Component
 public class RedisLock {
     private static ResourceLoader resourceLoader = new DefaultResourceLoader();
-    private static final int DEFAULT_TIME_OUT = 100; // 30 s
-    private static final int DEFAULT_RELOCK_TIME = 30; // 10 s
+    private static final int DEFAULT_TIME_OUT = 10; // 30 s
+    private static final int DEFAULT_RELOCK_TIME = 3; // 10 s
     private static RedisSerializer<String> argsSerializer  = new StringRedisSerializer();
     private static RedisSerializer<String> resultSerializer = new StringRedisSerializer();
     private static RedisTemplate<String, String> redisTemplate;
@@ -50,44 +50,54 @@ public class RedisLock {
 
     //获取锁
     public static boolean myTryLock(String lockKey, String lockValue){
-        //获取lua脚本
-        DefaultRedisScript lockRedisScript =new DefaultRedisScript<>();
-        lockRedisScript.setLocation(new ClassPathResource("script/lock.lua"));
-        // 这个值类型要跟lua返回值类型一致才行，否则就会报 java.lang.IllegalStateException
-        lockRedisScript.setResultType(Long.class);
-        List<String> keys = Collections.singletonList(lockKey);
-        Object result = redisTemplate.execute(lockRedisScript, argsSerializer, resultSerializer, keys, lockValue, String.valueOf(DEFAULT_TIME_OUT));
-        if("1".equals(String.valueOf(result))){
-            return true;
+        try {
+            //获取lua脚本
+            DefaultRedisScript lockRedisScript =new DefaultRedisScript<>();
+            lockRedisScript.setLocation(new ClassPathResource("script/lock.lua"));
+            // 这个值类型要跟lua返回值类型一致才行，否则就会报 java.lang.IllegalStateException
+            lockRedisScript.setResultType(Long.class);
+            List<String> keys = Collections.singletonList(lockKey);
+            Object result = redisTemplate.execute(lockRedisScript, argsSerializer, resultSerializer, keys, lockValue, String.valueOf(DEFAULT_TIME_OUT));
+            if("1".equals(String.valueOf(result))){
+                //获取锁成功，开启续约
+                autoWatchDog(lockKey, lockValue);
+                return true;
+            }
+        }catch (Exception e){
+            e.printStackTrace();
         }
         return false;
     }
 
     //释放锁（通过lua脚本判断只能删除自己的锁）
     public static boolean myUnLock(String lockKey, String lockValue){
-        //获取lua脚本
-        DefaultRedisScript unLockRedisScript = new DefaultRedisScript<>();
-        unLockRedisScript.setLocation(new ClassPathResource("script/unLock.lua"));
-        // 这个值类型要跟lua返回值类型一致才行，否则就会报 java.lang.IllegalStateException
-        unLockRedisScript.setResultType(Long.class);
-        List<String> keys = Collections.singletonList(lockKey);
-        Object result = redisTemplate.execute(unLockRedisScript, argsSerializer, resultSerializer, keys, lockValue);
-        if("1".equals(String.valueOf(result))){
-            return true;
+        try {
+            //获取lua脚本
+            DefaultRedisScript unLockRedisScript = new DefaultRedisScript<>();
+            unLockRedisScript.setLocation(new ClassPathResource("script/unLock.lua"));
+            // 这个值类型要跟lua返回值类型一致才行，否则就会报 java.lang.IllegalStateException
+            unLockRedisScript.setResultType(Long.class);
+            List<String> keys = Collections.singletonList(lockKey);
+            Object result = redisTemplate.execute(unLockRedisScript, argsSerializer, resultSerializer, keys, lockValue);
+            if("1".equals(String.valueOf(result))){
+                return true;
+            }
+        }catch (Exception e){
+            e.printStackTrace();
         }
         return false;
     }
 
     public static void autoWatchDog(String lockKey, String lockValue){
-        new WatchDog(lockKey, lockValue).start();
+        new Thread(new WatchDog(lockKey, lockValue)).start();
     }
 
 
     //实现自动续约，看门狗
     @Data
-    static class WatchDog extends Thread{
+    static class WatchDog implements Runnable{
         //业务是否执行完
-        private static boolean businessDone;
+        private static boolean businessDone = false;
         private String lockKey;
         private String lockValue;
 
@@ -98,30 +108,36 @@ public class RedisLock {
 
         @Override
         public void run() {
-            ScheduledExecutorService service = Executors.newScheduledThreadPool(1);
-            System.out.println(lockValue + " 看门狗进程启动-----");
-            service.schedule(()->{
-                while(!businessDone){
-                    //获取lua脚本
-                    DefaultRedisScript lockRedisScript = new DefaultRedisScript<>();
-                    lockRedisScript.setLocation(new ClassPathResource("script/watchDog.lua"));
-                    // 这个值类型要跟lua返回值类型一致才行，否则就会报 java.lang.IllegalStateException
-                    lockRedisScript.setResultType(Long.class);
-                    List<String> keys = Collections.singletonList(lockKey);
-                    Object result = redisTemplate.execute(lockRedisScript, argsSerializer, resultSerializer, keys, lockValue, String.valueOf(DEFAULT_TIME_OUT));
-                    if(!"1".equals(String.valueOf(result))){
-                        businessDone = true;
-                        System.out.println(lockValue + " 看门狗进程终止-----");
-                    }
-                }
-            },RedisLock.DEFAULT_RELOCK_TIME, TimeUnit.SECONDS);
-            service.shutdown();
+            System.out.println(lockValue + "-"+ new SimpleDateFormat("hh:mm:ss").format(new Date()) + "-" +  "-看门狗进程启动-----");
+            try {
+                Timer timer = new Timer();
+                timer.schedule(
+                    new TimerTask() {
+                        public void run() {
+                            //获取lua脚本
+                            DefaultRedisScript lockRedisScript = new DefaultRedisScript<>();
+                            lockRedisScript.setLocation(new ClassPathResource("script/lock.lua"));
+                            // 这个值类型要跟lua返回值类型一致才行，否则就会报 java.lang.IllegalStateException
+                            lockRedisScript.setResultType(Long.class);
+                            List<String> keys = Collections.singletonList(lockKey);
+                            Object result = redisTemplate.execute(lockRedisScript, argsSerializer, resultSerializer, keys, lockValue, String.valueOf(DEFAULT_TIME_OUT));
+                            if(!"1".equals(String.valueOf(result))){
+                                businessDone = true;
+                                System.out.println(lockValue + "-"+ new SimpleDateFormat("hh:mm:ss").format(new Date()) + "-"+  "-看门狗进程终止-----");
+                                timer.cancel();
+                            }else{
+                                //获取key过期时间
+                                Long expire = redisTemplate.opsForValue().getOperations().getExpire(lockKey);
+                                System.err.println(lockValue + "-"+ new SimpleDateFormat("hh:mm:ss").format(new Date()) + "-" +  "-看门狗进程续约成功，剩余时间-----" + expire);
+                            }
+                        }
+                    }, 0, RedisLock.DEFAULT_RELOCK_TIME * 1000);
+
+            }catch (Exception e){
+                e.printStackTrace();
+            }
         }
     }
-
-
-
-
 
 
     //根据key获取value
@@ -138,6 +154,17 @@ public class RedisLock {
     //redisson释放锁
     public static void redissonUnLock(RLock rLock){
         rLock.unlock();
+    }
+
+
+    public static void main(String[] args) {
+        Timer timer = new Timer();
+        timer.schedule(
+                new TimerTask() {
+                    public void run() {
+                        System.out.println(new SimpleDateFormat("hh:mm:ss").format(new Date()) + "-" +11111);
+                    }
+                }, 0, 3000);
     }
 
 }

@@ -152,7 +152,7 @@ spring:
           #最小空闲
         min-idle: 100
       #连接超时时间
-    timeout: 50000
+    timeout: 50000000
 
 #  session:
 #    store-type: redis
