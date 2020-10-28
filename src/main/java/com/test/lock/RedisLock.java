@@ -7,22 +7,16 @@ import org.redisson.api.RLock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.DefaultResourceLoader;
-import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
-import org.springframework.data.redis.core.script.RedisScript;
 import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.stereotype.Component;
 
-import java.io.BufferedInputStream;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+
 
 /**
  * redis实现分布式锁
@@ -31,8 +25,8 @@ import java.util.concurrent.TimeUnit;
 @Component
 public class RedisLock {
     private static ResourceLoader resourceLoader = new DefaultResourceLoader();
-    private static final int DEFAULT_TIME_OUT = 10; // 30 s
-    private static final int DEFAULT_RELOCK_TIME = 3; // 10 s
+    private static final int DEFAULT_TIME_OUT = 10; // 30 s 默认失效时间
+    private static final int DEFAULT_RELOCK_TIME = 3; // 10 s  续约周期执行时间
     private static RedisSerializer<String> argsSerializer  = new StringRedisSerializer();
     private static RedisSerializer<String> resultSerializer = new StringRedisSerializer();
     private static RedisTemplate<String, String> redisTemplate;
@@ -96,8 +90,6 @@ public class RedisLock {
     //实现自动续约，看门狗
     @Data
     static class WatchDog implements Runnable{
-        //业务是否执行完
-        private static boolean businessDone = false;
         private String lockKey;
         private String lockValue;
 
@@ -114,6 +106,7 @@ public class RedisLock {
                 timer.schedule(
                     new TimerTask() {
                         public void run() {
+                            Long expire1 = redisTemplate.opsForValue().getOperations().getExpire(lockKey);
                             //获取lua脚本
                             DefaultRedisScript lockRedisScript = new DefaultRedisScript<>();
                             lockRedisScript.setLocation(new ClassPathResource("script/lock.lua"));
@@ -122,13 +115,12 @@ public class RedisLock {
                             List<String> keys = Collections.singletonList(lockKey);
                             Object result = redisTemplate.execute(lockRedisScript, argsSerializer, resultSerializer, keys, lockValue, String.valueOf(DEFAULT_TIME_OUT));
                             if(!"1".equals(String.valueOf(result))){
-                                businessDone = true;
                                 System.out.println(lockValue + "-"+ new SimpleDateFormat("hh:mm:ss").format(new Date()) + "-"+  "-看门狗进程终止-----");
                                 timer.cancel();
                             }else{
                                 //获取key过期时间
-                                Long expire = redisTemplate.opsForValue().getOperations().getExpire(lockKey);
-                                System.err.println(lockValue + "-"+ new SimpleDateFormat("hh:mm:ss").format(new Date()) + "-" +  "-看门狗进程续约成功，剩余时间-----" + expire);
+                                Long expire2 = redisTemplate.opsForValue().getOperations().getExpire(lockKey);
+                                System.err.println(lockValue + "-"+ new SimpleDateFormat("hh:mm:ss").format(new Date()) + "-" +  "-看门狗进程续约成功，续约前剩余时间-----" + expire1 + "续约后剩余时间-----" + expire2);
                             }
                         }
                     }, 0, RedisLock.DEFAULT_RELOCK_TIME * 1000);

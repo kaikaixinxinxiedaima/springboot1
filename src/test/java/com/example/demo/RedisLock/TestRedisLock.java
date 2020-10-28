@@ -19,14 +19,10 @@ import java.util.concurrent.CountDownLatch;
 /**
  * 测试redis分布式锁
  */
-
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class TestRedisLock {
     final static String lockKey = "jiaobaba";
-
-    @Autowired
-    private RedisTemplate<String, String> redisTemplate;
 
     public TestRedisLock() {
         //在构造函数上写上这个
@@ -40,9 +36,7 @@ public class TestRedisLock {
         for (int i = 0; i < 5; i++) {
             String lockValue = UUID.randomUUID().toString();
             new Thread(()->{
-                do{
-
-                }while (!func(lockValue));
+                while (!func(lockValue)){};
 //                func1();
 
                 downLatch.countDown();
@@ -55,6 +49,11 @@ public class TestRedisLock {
         System.out.println("全部任务执行完毕");
     }
 
+    /**
+     * 自己实现分布式锁测试
+     * @param lockValue
+     * @return
+     */
     public boolean func(String lockValue){
         Boolean flag = true;
         try{
@@ -87,6 +86,9 @@ public class TestRedisLock {
         return flag;
     }
 
+    /**
+     * redisson 分布式锁测试
+     */
     public void func1(){
         RLock rLock = RedisLock.redissonGetLock(lockKey);
         try{
