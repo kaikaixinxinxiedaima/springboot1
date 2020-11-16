@@ -27,7 +27,7 @@ import java.util.Date;
 @SpringBootApplication(exclude= {DataSourceAutoConfiguration.class})
 @MapperScan("com.test.mapper")//将项目中对应的mapper类的路径加进来就可以了
 //@EnableScheduling //开启定时任务
-@Import({DataSourceConfig.class}) //数据源
+//@Import({DataSourceConfig.class}) //数据源
 @EnableTransactionManagement //开启事务管理
 @ServletComponentScan //在程序启动时将对应的bean加载进来
 public class Springboot1Application extends SpringBootServletInitializer {

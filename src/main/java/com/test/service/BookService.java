@@ -34,4 +34,9 @@ public class BookService {
         int a = 1/0;
         return book;
     }
+
+    @Transactional
+    public void save(Book book){
+        bookMapper.insert(book);
+    }
 }

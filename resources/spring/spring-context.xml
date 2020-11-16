@@ -1,67 +1,67 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:context="http://www.springframework.org/schema/context"
-       xmlns:tx="http://www.springframework.org/schema/tx"
-       xmlns:p="http://www.springframework.org/schema/p"
-       xmlns:aop="http://www.springframework.org/schema/aop"
-       xmlns:util="http://www.springframework.org/schema/util" xmlns:task="http://www.springframework.org/schema/task"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+<!--<?xml version="1.0" encoding="UTF-8"?>-->
+<!--<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"-->
+<!--       xmlns:context="http://www.springframework.org/schema/context"-->
+<!--       xmlns:tx="http://www.springframework.org/schema/tx"-->
+<!--       xmlns:p="http://www.springframework.org/schema/p"-->
+<!--       xmlns:aop="http://www.springframework.org/schema/aop"-->
+<!--       xmlns:util="http://www.springframework.org/schema/util" xmlns:task="http://www.springframework.org/schema/task"-->
+<!--       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd-->
 
-		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
-		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
-		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.0.xsd
-		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-4.0.xsd
-        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+<!--		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd-->
+<!--		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd-->
+<!--		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.0.xsd-->
+<!--		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-4.0.xsd-->
+<!--        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd-->
 
-        "
+<!--        "-->
 
-       default-lazy-init="true">
+<!--       default-lazy-init="true">-->
 
-    <description>Spring Configuration</description>
+<!--    <description>Spring Configuration</description>-->
 
-    <!--setter-->
-    <!--
-        <bean id="testController" class="com.test.day.TestController"  autowire="constructor">
-            &lt;!&ndash;<property name="testService"  ref="testService"></property>&ndash;&gt;
-        </bean>
+<!--    &lt;!&ndash;setter&ndash;&gt;-->
+<!--    &lt;!&ndash;-->
+<!--        <bean id="testController" class="com.test.day.TestController"  autowire="constructor">-->
+<!--            &lt;!&ndash;<property name="testService"  ref="testService"></property>&ndash;&gt;-->
+<!--        </bean>-->
 
-        <bean id="testService" class="com.test.day.TestService">
+<!--        <bean id="testService" class="com.test.day.TestService">-->
 
-        </bean>
-    -->
-
-
-    <!--构造器-->
-    <!--    <bean name="testController" class="com.test.day.TestController">
-            <constructor-arg  name="testService" index="0" ref="testService"></constructor-arg>
-        </bean>-->
-
-    <!--静态工厂-->
-    <!--
-        <bean name="testController" class="com.test.day.TestController">
-            <property name="testService" ref="testService"></property>
-        </bean>
-    -->
-
-    <!--    <bean name="testController" class="com.test.day.TestController">
-            <property name="testService" ref="testService"></property>
-        </bean>
-
-        &lt;!&ndash;注意这里注入的是静态工厂类&ndash;&gt;
-        <bean name="testService" factory-bean="examplesFactory" factory-method="getTestService">
-
-        </bean>
-
-        <bean name="examplesFactory" class="com.test.day.ExamplesFactory">
-
-        </bean>-->
-
-    <context:component-scan base-package="com.test.day">
-        <context:include-filter type="regex" expression="com.test.day.*"/>
-    </context:component-scan>
-
-    <!--通过配置织入@Aspectj切面-->
-    <aop:aspectj-autoproxy expose-proxy="true"></aop:aspectj-autoproxy>
+<!--        </bean>-->
+<!--    &ndash;&gt;-->
 
 
-</beans>
+<!--    &lt;!&ndash;构造器&ndash;&gt;-->
+<!--    &lt;!&ndash;    <bean name="testController" class="com.test.day.TestController">-->
+<!--            <constructor-arg  name="testService" index="0" ref="testService"></constructor-arg>-->
+<!--        </bean>&ndash;&gt;-->
+
+<!--    &lt;!&ndash;静态工厂&ndash;&gt;-->
+<!--    &lt;!&ndash;-->
+<!--        <bean name="testController" class="com.test.day.TestController">-->
+<!--            <property name="testService" ref="testService"></property>-->
+<!--        </bean>-->
+<!--    &ndash;&gt;-->
+
+<!--    &lt;!&ndash;    <bean name="testController" class="com.test.day.TestController">-->
+<!--            <property name="testService" ref="testService"></property>-->
+<!--        </bean>-->
+
+<!--        &lt;!&ndash;注意这里注入的是静态工厂类&ndash;&gt;-->
+<!--        <bean name="testService" factory-bean="examplesFactory" factory-method="getTestService">-->
+
+<!--        </bean>-->
+
+<!--        <bean name="examplesFactory" class="com.test.day.ExamplesFactory">-->
+
+<!--        </bean>&ndash;&gt;-->
+
+<!--    <context:component-scan base-package="com.test.day">-->
+<!--        <context:include-filter type="regex" expression="com.test.day.*"/>-->
+<!--    </context:component-scan>-->
+
+<!--    &lt;!&ndash;通过配置织入@Aspectj切面&ndash;&gt;-->
+<!--    <aop:aspectj-autoproxy expose-proxy="true"></aop:aspectj-autoproxy>-->
+
+
+<!--</beans>-->
