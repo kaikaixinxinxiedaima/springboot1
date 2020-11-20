@@ -86,11 +86,18 @@
             <scope>test</scope>
         </dependency>
 
+<!--        <dependency>-->
+<!--            <groupId>com.alibaba</groupId>-->
+<!--            <artifactId>druid-spring-boot-starter</artifactId>-->
+<!--            <version>1.1.10</version>-->
+<!--        </dependency>-->
+
         <dependency>
             <groupId>com.alibaba</groupId>
-            <artifactId>druid-spring-boot-starter</artifactId>
-            <version>1.1.10</version>
+            <artifactId>druid</artifactId>
+            <version>1.1.23</version>
         </dependency>
+
 
         <dependency>
             <groupId>com.google.code.gson</groupId>
@@ -338,11 +345,25 @@
             </exclusions>
         </dependency>-->
 
+<!--        <dependency>-->
+<!--            <groupId>org.apache.shardingsphere</groupId>-->
+<!--            <artifactId>shardingsphere-jdbc-core</artifactId>-->
+<!--            <version>5.0.0-alpha</version>-->
+<!--        </dependency>-->
+
+        <!--sharding-jdbc-->
+<!--        <dependency>-->
+<!--            <groupId>io.shardingsphere</groupId>-->
+<!--            <artifactId>sharding-jdbc-spring-boot-starter</artifactId>-->
+<!--            <version>3.1.0</version>-->
+<!--        </dependency>-->
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-jdbc-core</artifactId>
-            <version>5.0.0-alpha</version>
+            <artifactId>sharding-jdbc-spring-boot-starter</artifactId>
+            <version>4.1.1</version>
         </dependency>
+
+
     </dependencies>
 
 

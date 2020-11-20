@@ -24,7 +24,7 @@ import java.net.UnknownHostException;
 import java.util.Date;
 
 //exclude = DataSourceAutoConfiguration.class
-@SpringBootApplication(exclude= {DataSourceAutoConfiguration.class})
+@SpringBootApplication/*(exclude= {DataSourceAutoConfiguration.class})*/
 @MapperScan("com.test.mapper")//将项目中对应的mapper类的路径加进来就可以了
 //@EnableScheduling //开启定时任务
 //@Import({DataSourceConfig.class}) //数据源

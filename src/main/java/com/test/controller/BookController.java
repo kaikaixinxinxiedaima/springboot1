@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -46,7 +47,26 @@ public class BookController {
     @Autowired
     private  RabbitTemplate rabbitTemplate; //rabbitTemplate是springboot 提供的默认实现
 
-
+    /**
+     * @author  fanchunying
+     * @create  2020/11/20 14:07
+     * @desc
+     * @param null
+     * @return 插入
+     **/
+    @RequestMapping(value="/inserts")
+    public void inserts(){
+        for (int i = 10; i < 20; i++) {
+            Book book = new Book();
+            book.setId(i);
+            book.setBookName("测试"+i);
+            book.setBookContent("测试");
+            book.setAuthor("sj");
+            book.setCreateTime(new Date());
+            book.setUpdateTime(new Date());
+            bookService.save(book);
+        }
+    }
 
     /**
      * 查询图书
