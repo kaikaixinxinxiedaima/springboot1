@@ -233,11 +233,20 @@ spring:
       tables:
         book:
           key-generator-column-name: id
-#          actual-data-nodes: springboot-$->{0..1}
+          actual-data-nodes: springboot-$->{0..1}.book$->{2..3} #数据节点
           database-strategy: #分库策略
             inline:
               sharding-column: id
               algorithm-expression: springboot-$->{id % 2}
+          table-strategy: #分表策略
+#            inline:
+#              sharding-column: id
+#              algorithm-expression: book$->{id % 2 + 2}
+            standard: #自定义分表策略
+              shardingColumn: id
+              preciseAlgorithmClassName: com.test.sharding.TableShardingAlgorithm
+              rangeAlgorithmClassName: com.test.sharding.TableShardingAlgorithm
+
       # 默认数据库分片策略
       default-database-strategy:
         inline:

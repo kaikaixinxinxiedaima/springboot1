@@ -50,12 +50,12 @@ public class BookController {
     /**
      * @author  fanchunying
      * @create  2020/11/20 14:07
-     * @desc
-     * @param null
-     * @return 插入
+     * @desc 分库分表插入测试
+     * @return
      **/
     @RequestMapping(value="/inserts")
-    public void inserts(){
+    @ResponseBody
+    public String inserts(){
         for (int i = 10; i < 20; i++) {
             Book book = new Book();
             book.setId(i);
@@ -66,6 +66,8 @@ public class BookController {
             book.setUpdateTime(new Date());
             bookService.save(book);
         }
+
+        return "插入成功！！！";
     }
 
     /**
