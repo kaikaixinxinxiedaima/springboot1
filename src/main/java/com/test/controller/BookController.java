@@ -8,6 +8,7 @@ import com.test.service.BookService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
+import org.apache.shardingsphere.api.hint.HintManager;
 import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.authz.annotation.RequiresRoles;
@@ -79,6 +80,13 @@ public class BookController {
     @RequestMapping(value="/list/{id}")
     @ResponseBody
     public Book list(@PathVariable(value = "id") Integer id){
+        // sharding-jdbc 强制路由主库
+        HintManager instance = HintManager.getInstance();
+        if(!instance.isMasterRouteOnly()){
+            instance.setMasterRouteOnly();
+            instance.close();
+        }
+
         Book book = bookService.findById(id);
 
         stringRedisTemplate.opsForValue().set("test","测试");

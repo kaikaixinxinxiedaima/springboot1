@@ -257,9 +257,22 @@ spring:
       default-key-generator-class-name: io.shardingsphere.core.keygen.DefaultKeyGenerator
       default-data-source-name: springboot-0 # 未配置分片规则的表将通过默认数据源定位
 
+      masterslave:
+        # 读写分离配置
+        load-balance-algorithm-type: round_robin
+        # 最终的数据源名称
+        name: dataSource
+        # 主库数据源名称
+        master-data-source-name: springboot-0
+        # 从库数据源名称列表，多个逗号分隔
+        slave-data-source-names: springboot-1
+
     props:
       sql:
         show: true
+# sharding-jdbc 配置 -----------------------------
+
+
 
 #分页插件配置
 pagehelper:
