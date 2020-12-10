@@ -1,5 +1,6 @@
 package com.test.conf;
 
+import com.test.interceptor.JwtInterceptor;
 import com.test.interceptor.LogInterceptor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,6 +20,7 @@ public class WebAppConfig extends WebMvcConfigurerAdapter {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(new LogInterceptor()).addPathPatterns ("/**");
+        registry.addInterceptor(new JwtInterceptor()).addPathPatterns ("/**");
         super.addInterceptors(registry);
     }
 }
